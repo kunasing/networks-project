@@ -32,5 +32,3 @@ dev = [
 ]
 
 [project.scripts]
-helper = "spotify.helper:main"
-main = "spotify.helper:main"
