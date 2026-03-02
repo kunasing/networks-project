@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def load_tickers_from_file(filepath="output/tickers.txt"):
+def load_tickers_from_file(filepath="ticker_metadata/tickers.txt"):
     """Reads tickers from a file back into a set."""
     if not os.path.exists(filepath):
         print(f"Ticker file {filepath} not found.")

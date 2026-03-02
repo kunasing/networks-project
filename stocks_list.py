@@ -20,7 +20,6 @@ def main():
 
     for stock_type in stock_types:
         get_tickers_by_type(stock_type, tickers, api_key)
-        print(len(tickers))
 
     save_tickers_to_file(tickers)
 
@@ -28,7 +27,7 @@ def main():
     return len(tickers)
 
 
-def save_tickers_to_file(tickers, filepath="output/tickers.txt"):
+def save_tickers_to_file(tickers, filepath="ticker_metadata/tickers.txt"):
     """Writes all unique tickers to a newline-separated file."""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w") as f:
@@ -56,7 +55,7 @@ def get_tickers_by_type(stock_type, tickers: set, api_key: str):
             response.status_code != 200
             and "exceeded the maximum requests per minute" in response.text
         ):
-            print("Rate limit exceeded, trying again in 1 minute.")
+            print("Rate limit exceeded, continuing in 1 minute.")
             time.sleep(30)
             print("...in 30 seconds.")
             time.sleep(15)
