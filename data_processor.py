@@ -74,14 +74,25 @@ def read_and_process(output_dir: Path, ticker_set: set):
     print(full_df.shape)
     print(prices_df.shape)
 
-    # 1. Calculate log return values for a 50-day window
-    print("Calculating 50-day rolling log returns...")
+    # Calculate weekly returns (every 5 days)
+    print("Calculating weekly (5-day) log returns...")
     prices_df = prices_df.astype(float)
-    log_returns_50d = np.log(prices_df / prices_df.shift(50))
+    # Get prices every 5 days
+    weekly_prices = prices_df.iloc[::5]
+    # Calculate log returns between these 5-day intervals
+    # log(P_t / P_{t-5})
+    vector_df = np.log(weekly_prices / weekly_prices.shift(1))
+    # Drop the first row as it will be NaN
+    vector_df = vector_df.dropna(how="all")
 
-    # 2. Extract step size 10
-    print("Applying step size 10 to extract periodic returns...")
-    vector_df = log_returns_50d.iloc[50::10]
+    # Identify tickers with missing data
+    missing_data_mask = vector_df.isna().any()
+    missing_tickers = missing_data_mask[missing_data_mask].index.tolist()
+    if missing_tickers:
+        print(f"Tickers with missing data (being removed): {', '.join(missing_tickers)}")
+    
+    # Remove tickers with missing data
+    vector_df = vector_df.dropna(axis=1)
 
     # Transposing means: each row is a stock ticker
     ticker_vectors = vector_df.T
@@ -89,6 +100,11 @@ def read_and_process(output_dir: Path, ticker_set: set):
     ticker_vectors = ticker_vectors.fillna(0)
 
     print(f"Constructed vectors for {len(ticker_vectors)} tickers.")
+
+    # Save ticker vectors to CSV
+    vectors_file = output_dir / "ticker_vectors.csv"
+    ticker_vectors.to_csv(vectors_file)
+    print(f"Ticker vectors saved to {vectors_file}")
 
     # 3. Generate Similarity Metric
     print("Computing cosine similarity...")
