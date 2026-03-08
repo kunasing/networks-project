@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import networkx as nx
+import numpy as np
 import pandas as pd
 
 
@@ -19,17 +20,22 @@ def main():
     # Load the CSV. index_col=0 assumes ticker names are in the first column
     sim_df = pd.read_csv(similarity_file, index_col=0)
 
-    G = build_network(sim_df)
+    # Convert cosine similarity to cosine distance: d = 1 - s
+    print("Converting cosine similarity to cosine distance...")
+    cosine_dist = 1.0 - sim_df.values
+    dist_df = pd.DataFrame(cosine_dist, index=sim_df.index, columns=sim_df.columns)
+
+    G = build_network(dist_df)
     display(G)
 
 
-def build_network(sim_df):
-    print("Building a dense graph from similarity matrix...")
-    # Create a graph from the similarity matrix
+def build_network(dist_df):
+    print("Building a dense graph from distance matrix...")
+    # Create a graph from the distance matrix
     # We use the index/columns as nodes and row values as edge weights
-    G = nx.from_pandas_adjacency(sim_df)
+    G = nx.from_pandas_adjacency(dist_df)
 
-    # Remove self-loops (diagonal of the matrix is 1.0)
+    # Remove self-loops (diagonal of the matrix is 0.0 distance)
     G.remove_edges_from(nx.selfloop_edges(G))
 
     print(
@@ -45,17 +51,17 @@ def display(G):
     print(f"Edges: {G.number_of_edges()}")
 
     # For very large dense graphs, drawing is often uninformative or slow.
-    # However, we can show the top connected pairs.
-    print("\nTop 5 Most Similar Ticker Pairs:")
-    edges = sorted(
-        G.edges(data=True), key=lambda x: x[2].get("weight", 0), reverse=True
-    )
+    # However, we can show the top closest pairs (lowest cosine distance).
+    print("\nTop 10 Closest Ticker Pairs (by Cosine Distance):")
+    # Sort by weight (distance) ascending
+    edges = sorted(G.edges(data=True), key=lambda x: x[2].get("weight", 1.0))
+
+    count = 0
     for u, v, d in edges:
-        if d["weight"] == 1:
-            pass
-        if d["weight"] <= 0.9:
+        if count >= 10:
             break
-        print(f"{u} <-> {v}: {d['weight']:.4f}")
+        print(f"{u} <-> {v}: distance = {d['weight']:.4f}")
+        count += 1
 
 
 if __name__ == "__main__":
