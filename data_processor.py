@@ -17,7 +17,7 @@ def load_tickers_from_file(filepath="ticker_metadata/tickers.txt"):
 
 
 def read_and_process(output_dir: Path, ticker_set: set):
-    data_dir = "data"
+    data_dir = "data/Yearly"
     # Find both standard CSVs and gzipped CSVs
     csv_files = []
     for ext in ["*.csv", "*.csv.gz"]:
@@ -89,8 +89,10 @@ def read_and_process(output_dir: Path, ticker_set: set):
     missing_data_mask = vector_df.isna().any()
     missing_tickers = missing_data_mask[missing_data_mask].index.tolist()
     if missing_tickers:
-        print(f"Tickers with missing data (being removed): {', '.join(missing_tickers)}")
-    
+        print(
+            f"Tickers with missing data (being removed): {', '.join(missing_tickers)}"
+        )
+
     # Remove tickers with missing data
     vector_df = vector_df.dropna(axis=1)
 

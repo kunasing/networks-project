@@ -27,8 +27,13 @@ def main():
     return len(tickers)
 
 
-def save_tickers_to_file(tickers, filepath="ticker_metadata/tickers.txt"):
+def save_tickers_to_file(tickers, filepath=None):
     """Writes all unique tickers to a newline-separated file."""
+    if filepath is None:
+        # Move up one level from utils/ to project root
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        filepath = os.path.join(base_dir, "ticker_metadata", "tickers.txt")
+
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w") as f:
         for ticker in sorted(tickers):

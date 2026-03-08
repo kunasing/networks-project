@@ -1,25 +1,73 @@
 # MATH 168 - Networks Group Project
 
-Our project is to analyze stock data using networks. We want to find which industries and stocks are correlated and central to the market.
+This project analyzes financial market correlations by building networks from stock return similarities. We identify industry clusters and central market influencers using 5-day log returns and cosine distance metrics.
 
-To initialize and run the project, we use uv. This manages packages and dependencies and also sets the virtual environment.
+## Setup & Running
 
-Installation docs: https://docs.astral.sh/uv/getting-started/installation/#standalone-installer.
+### 1. Download Dataset
+Before running the project, download the raw stock data and place it in the `data/` directory:
+- [Download Dataset (Google Drive)](https://drive.google.com/file/d/1cEzKmWXDQkTdpLI9VeJsPMcXdQXswDwo/view?usp=sharing)
+- Extract the zip file directly into the `data/` directory (this will create `data/Yearly/`).
+- Ensure your structure looks like: `data/Yearly/2021/`, `data/Yearly/2022/`, etc.
 
-## Setup
+### 2. Environment Setup (Standard Pip)
 
-Retrieve the data from ... ?
+Create a virtual environment and install the required dependencies:
 
-We store the tickers at ticker_metadata/tickers.txt, so this is not necessary, but shows how the list is generated.
-Create .env file in root, with API key for polygon (now massive), so you can run the stocks list if it needs updated:
-
-```text
-POLYGON_API_KEY=your_api_key_here
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
+pip install pandas numpy networkx scikit-learn matplotlib jupyter
 ```
 
-## Running the Project
+### 3. Data Processing
 
-Then, you can:
-`uv run stocks_list.py` -> generates `ticker_metadata/tickers.txt`, which is a list of stocks in the exchange. used later to filter out ETFs, Funds, and Trusts.
-`uv run data_processor.py` -> use rolling window for stock return to generate a similarity rating for performance between different stocks.
-`uv run main.py` -> network anaylsis... to be updated
+Calculate 5-day log returns and generate similarity matrices:
+
+```bash
+python data_processor.py
+```
+
+_This will clean the data and output results to the `output/` directory._
+
+### 4. Network Analysis
+
+Run the main analysis script to build the network and view top correlations:
+
+```bash
+python main.py
+```
+
+### 5. Interactive Exploration
+
+For deep-dive analysis (MST, centrality, etc.), use the Jupyter Notebook:
+
+```bash
+jupyter notebook analyze_network.ipynb
+```
+
+---
+
+## Alternative Methodology: `uv`
+
+If you have `uv` installed, you can skip the manual environment setup:
+
+1. **Initialize**: `uv sync`
+2. **Run Scripts**:
+   - `uv run data_processor.py`
+   - `uv run main.py`
+   - `uv run jupyter notebook analyze_network.ipynb`
+
+[Install uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+---
+
+## Utilities
+
+The `utils/` folder contains scripts for project maintenance:
+
+- `utils/stocks_list.py`: Fetches a fresh list of active stock tickers (requires `POLYGON_API_KEY` in `.env`).
+
+```bash
+python utils/stocks_list.py
+```
