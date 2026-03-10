@@ -8,12 +8,27 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def load_tickers_from_file(filepath="ticker_metadata/tickers.txt"):
-    """Reads tickers from a file back into a set."""
+    """Reads tickers from file into a set.
+
+    Supports legacy format (one per line) or tab-separated metadata: ticker\t...
+    """
     if not os.path.exists(filepath):
         print(f"Ticker file {filepath} not found.")
         return set()
+
+    tickers = set()
     with open(filepath, "r") as f:
-        return {line.strip() for line in f if line.strip()}
+        for line in f:
+            raw = line.strip()
+            if not raw or raw.lower().startswith("ticker"):
+                continue
+
+            # Extract ticker from the first tab-separated field
+            ticker = raw.split("\t")[0].strip()
+            if ticker:
+                tickers.add(ticker)
+
+    return tickers
 
 
 def read_and_process(output_dir: Path, ticker_set: set):
