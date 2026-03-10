@@ -111,6 +111,11 @@ def read_and_process(output_dir: Path, ticker_set: set):
     # Remove tickers with missing data
     vector_df = vector_df.dropna(axis=1)
 
+    # Normalize vectors (Z-score normalization per ticker)
+    # This ensures that volatility differences don't dominate the similarity measure
+    print("Centering returns to 0 mean")
+    vector_df = vector_df - vector_df.mean()
+
     # Transposing means: each row is a stock ticker
     ticker_vectors = vector_df.T
     ticker_vectors = ticker_vectors.replace([np.inf, -np.inf], np.nan)
