@@ -16,19 +16,20 @@ def main():
 
     stock_types = ["CS", "OS", "ADRC"]
 
-    tickers = set()
+    # Map ticker -> company name
+    ticker_metadata = {}
 
     for stock_type in stock_types:
-        get_tickers_by_type(stock_type, tickers, api_key)
+        get_tickers_by_type(stock_type, ticker_metadata, api_key)
 
-    save_tickers_to_file(tickers)
+    save_tickers_to_file(ticker_metadata)
 
-    print(f"Found {len(tickers)} stock tickers")
-    return len(tickers)
+    print(f"Found {len(ticker_metadata)} stock tickers")
+    return len(ticker_metadata)
 
 
-def save_tickers_to_file(tickers, filepath=None):
-    """Writes all unique tickers to a newline-separated file."""
+def save_tickers_to_file(ticker_metadata, filepath=None):
+    """Writes all unique tickers and stock names to a tab-separated file."""
     if filepath is None:
         # Move up one level from utils/ to project root
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,11 +37,13 @@ def save_tickers_to_file(tickers, filepath=None):
 
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w") as f:
-        for ticker in sorted(tickers):
-            f.write(f"{ticker}\n")
+        f.write("ticker\tname\n")
+        for ticker in sorted(ticker_metadata):
+            name = ticker_metadata.get(ticker, "")
+            f.write(f"{ticker}\t{name}\n")
 
 
-def get_tickers_by_type(stock_type, tickers: set, api_key: str):
+def get_tickers_by_type(stock_type, ticker_metadata: dict, api_key: str):
     params = {
         "type": stock_type,
         "market": "stocks",
@@ -75,7 +78,11 @@ def get_tickers_by_type(stock_type, tickers: set, api_key: str):
         data = response.json()
         print(f"Tickers retrieved: {data.get('count')}")
 
-        tickers.update({item["ticker"] for item in data["results"]})
+        for item in data.get("results", []):
+            ticker = item.get("ticker")
+            if not ticker:
+                continue
+            ticker_metadata[ticker] = item.get("name", "")
 
         url = data.get("next_url")
 

@@ -5,7 +5,9 @@ This project analyzes financial market correlations by building networks from st
 ## Setup & Running
 
 ### 1. Download Dataset
+
 Before running the project, download the raw stock data and place it in the `data/` directory:
+
 - [Download Dataset (Google Drive)](https://drive.google.com/file/d/1cEzKmWXDQkTdpLI9VeJsPMcXdQXswDwo/view?usp=sharing)
 - Extract the zip file directly into the `data/` directory (this will create `data/Yearly/`).
 - Ensure your structure looks like: `data/Yearly/2021/`, `data/Yearly/2022/`, etc.
@@ -64,10 +66,17 @@ If you have `uv` installed, you can skip the manual environment setup:
 
 ## Utilities
 
-The `utils/` folder contains scripts for project maintenance:
+The `utils/` folder contains scripts for project maintenance and metadata gathering:
 
-- `utils/stocks_list.py`: Fetches a fresh list of active stock tickers (requires `POLYGON_API_KEY` in `.env`).
+- `utils/stocks_list.py`: Fetches a fresh list of active stock tickers and company names from the Polygon API (requires `POLYGON_API_KEY` in `.env`). Saved to `ticker_metadata/tickers.txt`.
+- `utils/extract_siccd.py`: Scans the daily stock data files to extract unique SICCD (Standard Industrial Classification) codes for each ticker. Saved to `ticker_metadata/ticker_siccd.txt`.
+
+Example usage:
 
 ```bash
+# Update ticker names
 python utils/stocks_list.py
+
+# Extract industry codes from local data
+python utils/extract_siccd.py
 ```
