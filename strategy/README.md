@@ -6,6 +6,8 @@ The goal is to explore whether **network topology (clusters and centrality)** ca
 
 ## Directory Structure
 
+```shell
+
 analysis/
 │
 ├── prepare_stock_data.py
@@ -25,6 +27,8 @@ analysis/
 ├── meta.csv
 ├── selected_tickers.txt
 └── summary.txt
+
+```
 
 ## Setup
 
