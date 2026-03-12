@@ -8,7 +8,7 @@ The goal is to explore whether **network topology (clusters and centrality)** ca
 
 ```shell
 
-analysis/
+strategy/
 │
 ├── prepare_stock_data.py
 ├── analysis.ipynb
