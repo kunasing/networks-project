@@ -17,7 +17,7 @@ Before running the project, download the raw stock data and place it in the `dat
 Create a virtual environment and install the required dependencies:
 
 ```bash
-pip install pandas numpy networkx scikit-learn matplotlib seaborn jupyter
+pip install pandas numpy networkx scikit-learn matplotlib seaborn jupyter powerlaw
 ```
 
 ### 3. Data Processing
