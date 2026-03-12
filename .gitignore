@@ -2,3 +2,6 @@ data/
 output/
 .env
 __pycache__
+.jupyter/
+.DS_Store/
+.ipynb_checkpoints/
